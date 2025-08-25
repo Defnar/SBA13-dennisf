@@ -1,15 +1,15 @@
-class MissingProductError extends Error {
+class MissingProductsError extends Error {
   constructor(message) {
     super(message);
     this.name = "MissingProductError";
   }
 }
 
-class MalformedQueryError extends Error {
+class MalformedSortError extends Error {
   constructor(message) {
     super(message);
     this.name = "MalformedQueryError";
   }
 }
 
-module.exports = { MissingProductError, MalformedQueryError };
+module.exports = { MissingProductsError, MalformedSortError };

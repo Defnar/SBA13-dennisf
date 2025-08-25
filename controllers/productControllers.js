@@ -1,3 +1,7 @@
+const {
+  MalformedSortError,
+  MissingProductsError,
+} = require("../ErrorHandling/customErrors");
 const Product = require("../models/Product");
 
 const postProduct = async (req, res) => {
@@ -16,10 +20,12 @@ const getProduct = async (req, res) => {
 
     const product = await Product.findById(id);
 
-    if (!product) throw new Error("Product not found");
+    if (!product) throw new MissingProductsError("Product not found");
     res.json(product);
   } catch (err) {
-    res.status(404).json({ error: err.message });
+    if (err instanceof MissingProductsError)
+      res.status(404).json({ error: err.message });
+    else res.status(500).json({ error: err.message });
   }
 };
 
@@ -30,10 +36,12 @@ const putProduct = async (req, res) => {
 
     const product = await Product.findByIdAndUpdate(id, edit, { new: true });
 
-    if (!product) throw new Error("Product not found");
+    if (!product) throw new MissingProductsError("Product not found");
     res.json(product);
   } catch (err) {
-    res.status(404).json({ error: err.message });
+    if (err instanceof MissingProductsError)
+      res.status(404).json({ error: err.message });
+    else res.status(500).json({ error: err.message });
   }
 };
 
@@ -43,11 +51,13 @@ const deleteProduct = async (req, res) => {
 
     const product = await Product.findByIdAndDelete(id);
 
-    if (!product) throw new Error("Product not found");
+    if (!product) throw new MissingProductsError("Product not found");
 
     res.send("Product successfully deleted");
   } catch (err) {
-    res.status(4040).json({ error: err.message });
+    if (err instanceof MissingProductsError)
+      res.status(404).json({ error: err.message });
+    else res.status(500).json({ error: err.message });
   }
 };
 
@@ -86,25 +96,37 @@ const getAllProducts = async (req, res) => {
     //splits the sort method into category to sort, and whether asc or desc
     const sortMethod = sortBy.split("_");
 
+    //should create an array of something like ["price", "asc"]
     if (sortMethod[1] !== "asc" && sortMethod[1] !== "desc") {
-      res
-        .status(400)
-        .json({ error: "Sort method must end with asc or desc on end" });
-      throw new Error("Malformed sort by query");
+      throw new MalformedSortError("Malformed sort by query");
     }
 
     const sortParam = {};
     sortParam[sortMethod[0]] = sortMethod[1] === "asc" ? 1 : -1;
 
     const products = await Product.find({})
-    .sort(sortParam)
-    .skip(page - 1) * limit
-    .limit(limit)
-    .then(pagedResults => {
-        res.json(pagedResults)
-    })
+      .sort(sortParam)
+      .skip((page - 1) * limit)
+      .limit(limit);
 
-  } catch (error) {}
+    if (products.length === 0)
+      throw new MissingProductsError("No Products Found");
+    res.json(products);
+  } catch (err) {
+    if (err instanceof MalformedSortError)
+      res
+        .status(400)
+        .json({ error: "Sort method must end with asc or desc on end" });
+    else if (err instanceof MissingProductsError)
+      res.status(404).json({ error: err.message });
+    else res.status(500).json({ error: err.message });
+  }
 };
 
-module.exports = { postProduct, getProduct, putProduct, deleteProduct };
+module.exports = {
+  postProduct,
+  getProduct,
+  putProduct,
+  deleteProduct,
+  getAllProducts,
+};
