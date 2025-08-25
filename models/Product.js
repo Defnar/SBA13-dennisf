@@ -12,6 +12,7 @@ const Product = new Schema ({
     },
     price: {
         type: Number,
+        required: [true, "Product requires a price"],
         min: [0.01, "Price must be greater than 0"]
     },
     category: {
