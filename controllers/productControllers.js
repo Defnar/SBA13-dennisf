@@ -71,7 +71,7 @@ const getAllProducts = async (req, res) => {
       category,
       minPrice,
       maxPrice,
-      sortBy = price_desc,
+      sortBy = "price_desc",
       page = 1,
       limit = 10,
     } = req.query;
@@ -119,7 +119,10 @@ const getAllProducts = async (req, res) => {
         .json({ error: "Sort method must end with asc or desc on end" });
     else if (err instanceof MissingProductsError)
       res.status(404).json({ error: err.message });
-    else res.status(500).json({ error: err.message });
+    else {
+      console.log(err);
+      res.status(500).json({ error: err.message });
+    }
   }
 };
 

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 
 const db = async (uri) => {
     try {
