@@ -106,9 +106,9 @@ const getAllProducts = async (req, res) => {
       throw new MalformedSortError("Malformed sort by query");
     }
 
-    //creates sortparam object using asc or desc for mongoose
+    //creates sortparam object using asc or desc
     const sortParam = {};
-    sortParam[sortMethod[0]] = sortMethod[1] === "asc" ? 1 : -1;
+    sortParam[sortMethod[0]] = sortMethod[1];
 
     const products = await Product.find(query)
       .sort(sortParam)
