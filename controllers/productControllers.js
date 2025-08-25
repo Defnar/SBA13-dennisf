@@ -41,4 +41,19 @@ const putProduct = async (req, res) => {
     }
 }
 
-module.exports = {postProduct, getProduct, putProduct}
+const deleteProduct = async (req, res) => {
+    try {
+        const id = req.params.id;
+
+        const product = await Product.findByIdAndDelete(id);
+
+        if (!product) throw new Error("Product not found");
+
+        res.send("Product successfully deleted");
+    }
+    catch (err) {
+        res.status(4040).json({error: err.message})
+    }
+}
+
+module.exports = {postProduct, getProduct, putProduct, deleteProduct}
