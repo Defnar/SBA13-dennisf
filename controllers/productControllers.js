@@ -77,7 +77,10 @@ const getAllProducts = async (req, res) => {
     } = req.query;
 
     const query = {};
+    
 
+    //creating a query object to pass to our find parameters, using price and category
+    //as per assignment
     const price = {};
     if (minPrice) {
       price.$gte = minPrice;
@@ -97,10 +100,13 @@ const getAllProducts = async (req, res) => {
     const sortMethod = sortBy.split("_");
 
     //should create an array of something like ["price", "asc"]
+
+    //returns an error if user does not send a properly formatted string
     if (sortMethod[1] !== "asc" && sortMethod[1] !== "desc") {
       throw new MalformedSortError("Malformed sort by query");
     }
 
+    //creates sortparam object using asc or desc for mongoose
     const sortParam = {};
     sortParam[sortMethod[0]] = sortMethod[1] === "asc" ? 1 : -1;
 
@@ -109,6 +115,7 @@ const getAllProducts = async (req, res) => {
       .skip((page - 1) * limit)
       .limit(limit);
 
+      //no products = thrown error;
     if (products.length === 0)
       throw new MissingProductsError("No Products Found");
     res.json(products);
