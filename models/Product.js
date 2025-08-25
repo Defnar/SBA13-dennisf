@@ -15,6 +15,10 @@ const ProductSchema = new Schema({
     required: [true, "Product requires a price"],
     min: [0.01, "Price must be greater than 0"],
   },
+  inStock: {
+    type: Boolean,
+    default: true
+  },
   category: {
     type: String,
     required: [true, "Product requires a category"],
