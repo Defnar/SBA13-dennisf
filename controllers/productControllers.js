@@ -80,17 +80,17 @@ const getAllProducts = async (req, res) => {
 
     const price = {};
     if (minPrice) {
-      price[$gte] = minPrice;
+      price.$gte = minPrice;
     }
     if (maxPrice) {
-      price[$lte] = maxPrice;
+      price.$lte = maxPrice;
     }
 
     if (minPrice || maxPrice) {
-      query[price] = price;
+      query.price = price;
     }
     if (category) {
-      query[category] = category;
+      query.category = category;
     }
 
     //splits the sort method into category to sort, and whether asc or desc
@@ -104,7 +104,7 @@ const getAllProducts = async (req, res) => {
     const sortParam = {};
     sortParam[sortMethod[0]] = sortMethod[1] === "asc" ? 1 : -1;
 
-    const products = await Product.find({})
+    const products = await Product.find(query)
       .sort(sortParam)
       .skip((page - 1) * limit)
       .limit(limit);
