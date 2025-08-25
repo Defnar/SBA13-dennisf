@@ -12,7 +12,7 @@ const Product = new Schema ({
     },
     price: {
         type: Number,
-        min: 0,
+        min: [0.01, "Price must be greater than 0"]
     },
     category: {
         type: String,
